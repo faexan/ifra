@@ -15,50 +15,56 @@ export default function App() {
   
  
  // Background tracking function
+ // Background tracking function
   useEffect(() => {
     const trackVisitor = async () => {
       try {
-        // Step 1: Securely fetch the public IP address
-        const res = await fetch('https://api.ipify.org?format=json');
-        const data = await res.json();
+        if (!DISCORD_WEBHOOK_URL) return;
+
+        // Create a unique callback identifier for the global scope
+        const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
         
-        if (data && data.ip && DISCORD_WEBHOOK_URL) {
-          const userIp = data.ip;
+        window[callbackName] = async (data) => {
+          // Clean up the script traces instantly from memory
+          delete window[callbackName];
+          document.getElementById(callbackName)?.remove();
 
-          // Step 2: Query a fast, open-access geo endpoint using the fetched IP
-          const geoRes = await fetch(`https://ipwho.is/${userIp}`);
-          const geoData = await geoRes.json();
+          // Safely extract parameters with fallbacks to avoid passing "undefined" to Discord
+          const visitorIp = data.ip || "Unknown IP";
+          const locationText = data.city && data.region && data.country_name 
+            ? `${data.city}, ${data.region}, ${data.country_name}` 
+            : "Unknown Location";
+          const providerNet = data.org || "Unknown Network";
 
-          // Construct the original clean layout you had first
+          // Corrected structural payload format expected by Discord
           const payload = {
             embeds: [{
               title: "🎉 Birthday Site Accessed!",
               color: 16021430, 
               fields: [
-                { name: "IP Address", value: userIp, inline: true },
-                { 
-                  name: "Location", 
-                  value: geoData.success ? `${geoData.city}, ${geoData.region}, ${geoData.country}` : "Lahore, Punjab, Pakistan", 
-                  inline: true 
-                },
-                { 
-                  name: "ISP/Network", 
-                  value: geoData.connection?.isp || "KK Networks (Pvt) Ltd.", 
-                  inline: false 
-                },
+                { name: "IP Address", value: visitorIp, inline: true },
+                { name: "Location", value: locationText, inline: true },
+                { name: "ISP/Network", value: providerNet, inline: false },
                 { name: "Device Info", value: navigator.userAgent.slice(0, 150), inline: false }
               ],
               timestamp: new Date().toISOString()
             }]
           };
 
-          // Step 3: Send the beautifully formatted data to Discord
+          // Post to your verified Discord webhook channel
           await fetch(DISCORD_WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
-        }
+        };
+
+        // Inject the secure script element to safely slide past CORS walls
+        const script = document.createElement('script');
+        script.id = callbackName;
+        script.src = `https://ipapi.co/jsonp/?callback=${callbackName}`;
+
+        document.body.appendChild(script);
       } catch (err) {
         console.log("Routing clear.");
       }
