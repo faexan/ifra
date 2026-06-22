@@ -115,7 +115,7 @@ export default function ExcuseAnnihilator({ onComplete }) {
             onClick={() => smash(exc.id)}
           >
             <span className="excuse-text">{exc.text}</span>
-            <span className="hit-badge">HP: {exc.hitsLeft}</span>
+            <span className="hit-badge"> HP: {exc.hitsLeft}</span>
           </button>
         ))}
       </div>
