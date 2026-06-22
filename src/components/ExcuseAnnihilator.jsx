@@ -17,8 +17,8 @@ const APOLOGIES = [
 ]
 
 // Audio file paths (Replace with your actual assets)
-const HIT_SOUND_URL = '../punch.mp3'
-const DESTROY_SOUND_URL = '../distroyed.mp3'
+const HIT_SOUND_URL = '/punch.mp3'
+const DESTROY_SOUND_URL = '/distroyed.mp3'
 
 export default function ExcuseAnnihilator({ onComplete }) {
   // Initialize excuses with a random hit capacity between 2 and 4
