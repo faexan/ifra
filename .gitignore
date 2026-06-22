@@ -1,0 +1,47 @@
+.vercel
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Production Build Artifacts
+dist/
+build/
+out/
+
+# Development / Testing Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.eslintcache
+
+# Environment Variables & Local Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env.local
+
+# IDEs, Editors, and System Files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Diagnostic / Testing Reports
+coverage/
+.nyc_output
+
+# Next.js / Remix / Vite specific caches
+.next/
+.nuxt/
+.cache/
+.vite/
