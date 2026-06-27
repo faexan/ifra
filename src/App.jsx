@@ -7,7 +7,6 @@ import Finale from './components/Finale'
 import ParticleBackground from './components/ParticleBackground'
 import './App.css'
 
-// Paste your Discord URL string here
 const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1518559811560542348/fudhFlDLjdKbKLdqH_SoB4GCRuOcZJw46LtjScu0LmmySPOntm_RpDBLbbYQSKf1a4EV";
 
 export default function App() {
